@@ -25,7 +25,7 @@ jobs:
 
       # 3. 安装 JS 依赖
       - name: Install npm dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       # 4. 配置 Java 17（RN 0.75 要求）
       - name: Setup Java 17
