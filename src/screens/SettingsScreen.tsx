@@ -24,6 +24,8 @@ import GlassCard from '../components/GlassCard';
 import {UpdateService} from '../services/UpdateService';
 import packageJson from '../../package.json';
 import {PushService} from '../services/PushService';
+import Clipboard from '@react-native-clipboard/clipboard';
+import {Copy} from 'lucide-react-native';
 
 export default function SettingsScreen() {
   const {colors, theme, toggleTheme} = useTheme();
@@ -166,15 +168,26 @@ export default function SettingsScreen() {
         {/* 调试信息（用于测试推送） */}
         <Text style={[styles.sectionLabel, {color: colors.textMuted, marginTop: 28}]}>Debug Info (Push Testing)</Text>
         <GlassCard style={{padding: 16}}>
-          <Text style={{color: colors.textMuted, fontSize: 12, marginBottom: 8}}>Your FCM Device Token:</Text>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8}}>
+            <Text style={{color: colors.textMuted, fontSize: 12}}>Your FCM Device Token:</Text>
+            <TouchableOpacity 
+              onPress={() => {
+                Clipboard.setString(fcmToken);
+                Alert.alert('Success', 'Token copied to clipboard!');
+              }}
+              style={{flexDirection: 'row', alignItems: 'center', backgroundColor: colors.primaryColor + '20', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 6}}
+            >
+              <Copy size={14} color={colors.primaryColor} style={{marginRight: 4}} />
+              <Text style={{color: colors.primaryColor, fontSize: 12, fontWeight: '600'}}>Copy</Text>
+            </TouchableOpacity>
+          </View>
           <TextInput
             style={{color: colors.textMain, fontSize: 11, backgroundColor: 'rgba(0,0,0,0.05)', padding: 10, borderRadius: 8}}
             value={fcmToken}
             multiline
             editable={false}
-            selectTextOnFocus
           />
-          <Text style={{color: colors.textMuted, fontSize: 10, marginTop: 8}}>* Copy this token and use it in Firebase Console to send a test message.</Text>
+          <Text style={{color: colors.textMuted, fontSize: 10, marginTop: 8}}>* Use this token in Firebase Console to send a test message.</Text>
         </GlassCard>
 
         <Text style={[styles.version, {color: colors.textMuted}]}>
