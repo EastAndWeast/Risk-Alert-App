@@ -6,6 +6,9 @@ on:
       - main
   workflow_dispatch:  # 支持手动触发
 
+permissions:
+  contents: write
+
 jobs:
   build-android:
     name: Build Signed APK
