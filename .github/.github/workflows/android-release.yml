@@ -1,0 +1,92 @@
+name: 🤖 Android Release Build
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # 支持手动触发
+
+jobs:
+  build-android:
+    name: Build Signed APK
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 拉取代码
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. 配置 Node.js 环境
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # 3. 安装 JS 依赖
+      - name: Install npm dependencies
+        run: npm ci
+
+      # 4. 配置 Java 17（RN 0.75 要求）
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # 5. 配置 Android SDK
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      # 6. 恢复 Gradle 缓存（大幅加速构建）
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      # 7. 写入签名 keystore（从 GitHub Secrets 还原）
+      - name: Decode and write keystore
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > android/app/release.keystore
+        # 使用说明（配置 GitHub Secrets）:
+        # ANDROID_KEYSTORE_BASE64  → base64 编码的 .keystore 文件内容
+        # ANDROID_KEY_ALIAS        → keyAlias
+        # ANDROID_KEY_PASSWORD     → keyPassword
+        # ANDROID_STORE_PASSWORD   → storePassword
+
+      # 8. 写入 google-services.json（Firebase 配置）
+      - name: Write google-services.json
+        run: |
+          echo "${{ secrets.GOOGLE_SERVICES_JSON }}" > android/app/google-services.json
+
+      # 9. 构建 Release APK（已签名）
+      - name: Build signed Release APK
+        run: |
+          cd android
+          ./gradlew assembleRelease \
+            -Pandroid.injected.signing.store.file=${{ github.workspace }}/android/app/release.keystore \
+            -Pandroid.injected.signing.store.password=${{ secrets.ANDROID_STORE_PASSWORD }} \
+            -Pandroid.injected.signing.key.alias=${{ secrets.ANDROID_KEY_ALIAS }} \
+            -Pandroid.injected.signing.key.password=${{ secrets.ANDROID_KEY_PASSWORD }}
+
+      # 10. 上传 APK 到 GitHub Artifacts（可直接在 Actions 页面下载）
+      - name: Upload APK to Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: risk-alert-release-${{ github.run_number }}
+          path: android/app/build/outputs/apk/release/app-release.apk
+          retention-days: 30
+
+      # 11.（可选）生成 Release Tag 并附上 APK
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: android/app/build/outputs/apk/release/app-release.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
