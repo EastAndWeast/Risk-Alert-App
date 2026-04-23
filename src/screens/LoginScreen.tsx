@@ -29,7 +29,7 @@ export default function LoginScreen({onLoginSuccess}: LoginScreenProps) {
   const {t} = useTranslation();
 
   const [username, setUsername] = useState('admin_101');
-  const [password, setPassword] = useState('');
+  const [password, setPassword] = useState('123456');
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
