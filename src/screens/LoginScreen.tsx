@@ -41,8 +41,12 @@ export default function LoginScreen({onLoginSuccess}: LoginScreenProps) {
     // 模拟登录延迟（替换为真实 API 调用）
     setTimeout(async () => {
       setLoading(false);
-      // 登录成功后注册推送 Token
-      await PushService.registerToken(username);
+      try {
+        // 尝试注册推送 Token（不应阻塞登录）
+        await PushService.registerToken(username);
+      } catch (e) {
+        console.log('[Login] Push registration error:', e);
+      }
       onLoginSuccess();
     }, 800);
   };
