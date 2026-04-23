@@ -11,6 +11,7 @@ import {
   StyleSheet,
   Switch,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -22,6 +23,7 @@ import {switchLanguage} from '../i18n';
 import GlassCard from '../components/GlassCard';
 import {UpdateService} from '../services/UpdateService';
 import packageJson from '../../package.json';
+import {PushService} from '../services/PushService';
 
 export default function SettingsScreen() {
   const {colors, theme, toggleTheme} = useTheme();
@@ -30,6 +32,15 @@ export default function SettingsScreen() {
   const [langSheetOpen, setLangSheetOpen] = useState(false);
   const [pushEnabled, setPushEnabled] = useState(true);
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [fcmToken, setFcmToken] = useState<string>('Loading...');
+
+  React.useEffect(() => {
+    const fetchToken = async () => {
+      const token = await PushService.getFCMToken();
+      setFcmToken(token || 'Failed to get token');
+    };
+    fetchToken();
+  }, []);
 
   const handleLangSwitch = async (lang: 'en' | 'zh') => {
     await switchLanguage(lang);
@@ -151,6 +162,20 @@ export default function SettingsScreen() {
             </View>
           </TouchableOpacity>
         </View>
+
+        {/* 调试信息（用于测试推送） */}
+        <Text style={[styles.sectionLabel, {color: colors.textMuted, marginTop: 28}]}>Debug Info (Push Testing)</Text>
+        <GlassCard style={{padding: 16}}>
+          <Text style={{color: colors.textMuted, fontSize: 12, marginBottom: 8}}>Your FCM Device Token:</Text>
+          <TextInput
+            style={{color: colors.textMain, fontSize: 11, backgroundColor: 'rgba(0,0,0,0.05)', padding: 10, borderRadius: 8}}
+            value={fcmToken}
+            multiline
+            editable={false}
+            selectTextOnFocus
+          />
+          <Text style={{color: colors.textMuted, fontSize: 10, marginTop: 8}}>* Copy this token and use it in Firebase Console to send a test message.</Text>
+        </GlassCard>
 
         <Text style={[styles.version, {color: colors.textMuted}]}>
           Risk Alert Pro Terminal{'\n'}Version {packageJson.version}
