@@ -59,11 +59,6 @@ jobs:
         # ANDROID_KEY_PASSWORD     → keyPassword
         # ANDROID_STORE_PASSWORD   → storePassword
 
-      # 8. 写入 google-services.json（Firebase 配置）
-      - name: Write google-services.json
-        run: |
-          echo "${{ secrets.GOOGLE_SERVICES_JSON }}" > android/app/google-services.json
-
       # 9. 构建 Release APK（已签名）
       - name: Build signed Release APK
         run: |

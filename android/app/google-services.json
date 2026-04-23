@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "763916734176",
+    "project_id": "risk-alert-rn",
+    "storage_bucket": "risk-alert-rn.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:763916734176:android:78a757eee6c8d447b3ca85",
+        "android_client_info": {
+          "package_name": "com.riskalertrn"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBzW3L2XUcACyiZydPaU4p6CCvF-pxvjKA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
