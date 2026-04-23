@@ -20,6 +20,8 @@ export class PushService {
    */
   static async init() {
     if (Platform.OS === 'android') {
+      // Android 13+ 必须显式请求通知权限
+      await notifee.requestPermission();
       await PushService.createAndroidChannel();
     } else if (Platform.OS === 'ios') {
       await PushService.requestIOSPermission();
