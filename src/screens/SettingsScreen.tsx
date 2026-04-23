@@ -16,10 +16,12 @@ import {
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {useTranslation} from 'react-i18next';
-import {Languages, BellRing, Volume2, Moon, ShieldCheck, LogOut, ChevronRight} from 'lucide-react-native';
+import {Languages, BellRing, Volume2, Moon, ShieldCheck, LogOut, ChevronRight, RefreshCcw} from 'lucide-react-native';
 import {useTheme} from '../theme/ThemeContext';
 import {switchLanguage} from '../i18n';
 import GlassCard from '../components/GlassCard';
+import {UpdateService} from '../services/UpdateService';
+import packageJson from '../../package.json';
 
 export default function SettingsScreen() {
   const {colors, theme, toggleTheme} = useTheme();
@@ -133,6 +135,15 @@ export default function SettingsScreen() {
             </View>
             <ChevronRight size={16} color={colors.textMuted} />
           </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.settingItem, {borderBottomColor: colors.borderColor}]}
+            onPress={() => UpdateService.checkForUpdates(false)}>
+            <View style={styles.settingLeft}>
+              <RefreshCcw size={18} color={colors.primaryColor} />
+              <Text style={[styles.settingLabel, {color: colors.textMain}]}>Check for Updates</Text>
+            </View>
+            <ChevronRight size={16} color={colors.textMuted} />
+          </TouchableOpacity>
           <TouchableOpacity style={[styles.settingItem, {borderBottomWidth: 0}]}>
             <View style={styles.settingLeft}>
               <LogOut size={18} color={colors.dangerColor} />
@@ -142,7 +153,7 @@ export default function SettingsScreen() {
         </View>
 
         <Text style={[styles.version, {color: colors.textMuted}]}>
-          Risk Alert Pro Terminal{'\n'}Version 1.0.2 (Build 41)
+          Risk Alert Pro Terminal{'\n'}Version {packageJson.version}
         </Text>
       </ScrollView>
 
