@@ -20,6 +20,8 @@ import KVRow from '../components/KVRow';
 const PROFILE_DATA: Record<string, any> = {
   '10102': {platform: 'MT4', company: 'Demo Company A', datasource: 'Alpha MT4', currency: 'USD', balance: '$24,500.00', equity: '$24,000.00', margin_level: 850, margin_class: 'success', free_margin: '$22,100.00', open_lots: '2.40', open_positions: 3, leverage: '1:200', group: 'Alpha_Standard', created_at: '2023-08-15', email: 'client10102@demo.com', country: 'Hong Kong', kyc_status: 'Verified', risk_level: 'Low', alerts: [{rule: 'Large Trade (Lots)', time: '2025-04-11 14:22', severity: 'warning'}, {rule: 'Scalping', time: '2025-04-09 09:45', severity: 'danger'}]},
   '20888': {platform: 'MT5', company: 'Global Trading Inc', datasource: 'Beta MT5', currency: 'USD', balance: '$150,000.00', equity: '$90,000.00', margin_level: 120, margin_class: 'danger', free_margin: '$12,300.00', open_lots: '28.50', open_positions: 11, leverage: '1:100', group: 'Beta_VIP', created_at: '2022-03-01', email: 'trader20888@gtinc.com', country: 'Singapore', kyc_status: 'Verified', risk_level: 'High', alerts: [{rule: 'Exposure Alert', time: '2025-04-11 16:50', severity: 'danger'}, {rule: 'Large Trade (USD)', time: '2025-04-11 10:12', severity: 'danger'}]},
+  '55500': {platform: 'MT4', company: 'Demo Company A', datasource: 'Alpha MT4', currency: 'USD', balance: '$5,000.00', equity: '$5,200.00', margin_level: 450, margin_class: 'warning', free_margin: '$4,100.00', open_lots: '0.50', open_positions: 0, leverage: '1:100', group: 'Alpha_Basic', created_at: '2024-01-10', email: 'client55500@demo.com', country: 'Vietnam', kyc_status: 'Pending', risk_level: 'Medium', alerts: []},
+  '77701': {platform: 'API', company: 'Asia Market Corp', datasource: 'Direct API', currency: 'USD', balance: '$880,000.00', equity: '$880,000.00', margin_level: 999, margin_class: 'success', free_margin: '$850,000.00', open_lots: '100.00', open_positions: 1, leverage: '1:50', group: 'Institutional', created_at: '2021-12-01', email: 'corp77701@amc.com', country: 'China', kyc_status: 'Verified', risk_level: 'Low', alerts: []},
 };
 
 export default function AccountProfileScreen() {
@@ -28,6 +30,15 @@ export default function AccountProfileScreen() {
   const route = useRoute<any>();
   const accountId = route.params?.accountId ?? '20888';
   const p = PROFILE_DATA[accountId];
+
+  // 防御性检查：如果没有找到画像数据，显示提示
+  if (!p) {
+    return (
+      <SafeAreaView style={[styles.safe, {backgroundColor: colors.bgColor, justifyContent: 'center', alignItems: 'center'}]}>
+        <Text style={{color: colors.textMuted}}>Profile data not found for ID: {accountId}</Text>
+      </SafeAreaView>
+    );
+  }
 
   const marginColors: Record<string, string> = {success: colors.successColor, warning: colors.warningColor, danger: colors.dangerColor};
   const riskColors: Record<string, string> = {Low: '#10b981', Medium: '#f59e0b', High: '#ef4444'};
